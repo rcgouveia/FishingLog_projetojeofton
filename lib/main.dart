@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/core/db/HiveConfig.dart';
 import 'package:myapp/pages/home/HomePage.dart';
 
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await HiveConfig.init();
   runApp(const MyApp());
 }
 
