@@ -1,5 +1,5 @@
 class FishingModel{
-  String? id;
+  int? id;
   String fishName;
   String photoPath;
   String location;
