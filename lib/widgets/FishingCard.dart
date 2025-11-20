@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Formpage extends StatelessWidget {
+class FishingCard extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String description;
   final double price;
 
-  const Formpage({
+  const FishingCard({
     super.key,
     required this.imageUrl,
     required this.title,

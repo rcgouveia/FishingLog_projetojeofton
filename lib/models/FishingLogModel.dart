@@ -1,22 +1,33 @@
-class FishingModel{
-  String? id;
-  String fishName;
-  String photoPath;
-  String location;
-  DateTime date;
-  String? bait;
-  String? size;
-  String? weight;
+import 'package:hive/hive.dart';
 
-  FishingModel({
+part 'FishingLogModel.g.dart';
+
+@HiveType(typeId: 1)
+class FishingLogModel extends HiveObject {
+  @HiveField(0)
+  int? id;
+
+  @HiveField(1)
+  String fishName;
+
+  @HiveField(2)
+  double weight;
+
+  @HiveField(3)
+  double length;
+
+  @HiveField(4)
+  String location;
+
+  @HiveField(5)
+  DateTime date;
+
+  FishingLogModel({
     this.id,
     required this.fishName,
-    required this.photoPath,
+    required this.weight,
+    required this.length,
     required this.location,
     required this.date,
-    this.bait,
-    this.size,
-    this.weight,
   });
 }
-

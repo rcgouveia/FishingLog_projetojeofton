@@ -1,8 +1,19 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import '../../models/FishingLogModel.dart';
 
 class HiveConfig {
-  static Future init() async {
+  static const logsBox = "fishing_logs";
+
+  static Future<void> start() async {
     await Hive.initFlutter();
-    await Hive.openBox('fishing_logs');
+
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(FishingLogModelAdapter());
+    }
+
+    await Hive.openBox<FishingLogModel>(logsBox);
   }
+
+  static Box<FishingLogModel> get logs =>
+      Hive.box<FishingLogModel>(logsBox);
 }
