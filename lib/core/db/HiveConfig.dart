@@ -11,6 +11,12 @@ class HiveConfig {
       Hive.registerAdapter(FishingLogModelAdapter());
     }
 
+    // Apaga o box antigo se existir
+    if (await Hive.boxExists(logsBox)) {
+      await Hive.deleteBoxFromDisk(logsBox);
+    }
+
+    // Abre um box limpo
     await Hive.openBox<FishingLogModel>(logsBox);
   }
 

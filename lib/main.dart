@@ -6,6 +6,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await HiveConfig.init();
   runApp(const FishingApp());
+  
 }
 
 class FishingApp extends StatelessWidget {

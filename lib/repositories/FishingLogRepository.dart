@@ -29,6 +29,8 @@ class FishingLogRepository {
       height: model.height,
       location: model.location,
       date: model.date,
+      imagePath: model.imagePath,
+      bait: model.bait,
     );
     await _box.put(id, toSave);
     return toSave;
@@ -43,6 +45,8 @@ class FishingLogRepository {
       height: model.height,
       location: model.location,
       date: model.date,
+      imagePath: model.imagePath,
+      bait: model.bait,
     );
     await _box.put(id, updated);
     return updated;

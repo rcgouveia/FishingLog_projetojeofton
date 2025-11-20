@@ -1,4 +1,4 @@
-
+import 'dart:io'; // necessário para Image.file
 import 'package:flutter/material.dart';
 import '../../models/FishingLogModel.dart';
 import '../../repositories/FishingLogRepository.dart';
@@ -57,10 +57,26 @@ class _DetailPageState extends State<DetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ======== Imagem do peixe ========
+            if (log.imagePath.isNotEmpty)
+              Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.file(
+                    File(log.imagePath),
+                    width: double.infinity,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 16),
+
             _row('Peso', '${log.weight.toStringAsFixed(2)} kg'),
             _row('Comprimento', '${log.height.toStringAsFixed(1)} cm'),
             _row('Local', log.location),
             _row('Data', '${log.date.day}/${log.date.month}/${log.date.year}'),
+            _row('Isca', log.bait),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               icon: const Icon(Icons.edit),
