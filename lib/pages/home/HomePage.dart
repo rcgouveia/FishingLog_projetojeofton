@@ -1,107 +1,83 @@
+
 import 'package:flutter/material.dart';
-
-class FishingCard extends StatefulWidget {
-  final String imageUrl;
-  final String title;
-  final String description;
-  final double price;
-
-  const FishingCard({
-    Key? key,
-    required this.imageUrl,
-    required this.title,
-    required this.description,
-    required this.price,
-  }) : super(key: key);
-
-  @override
-  State<FishingCard> createState() => _FishingCardState();
-}
-
-class _FishingCardState extends State<FishingCard> {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.network(
-            widget.imageUrl,
-            fit: BoxFit.cover,
-            height: 180,
-            width: double.infinity,
-            errorBuilder: (context, error, stackTrace) => Container(
-              height: 180,
-              color: Colors.grey[300],
-              alignment: Alignment.center,
-              child: const Icon(Icons.broken_image),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text(widget.description),
-                const SizedBox(height: 8),
-                Text('R\$ ${widget.price.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+import 'package:hive_flutter/hive_flutter.dart';
+import '../../core/db/HiveConfig.dart';
+import '../../models/FishingLogModel.dart';
+import '../../repositories/FishingLogRepository.dart';
+import '../../widgets/FishingCard.dart';
+import '../form/FormPage.dart';
+import '../detail/DetailPage.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final repo = FishingLogRepository();
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Fishing Store",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.blue,
+        title: const Text('Fishing Log'),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          FishingCard(
-            imageUrl:
-                "https://images.unsplash.com/photo-1509470698895-81bdd988ba2c",
-            title: "Kit de Pesca Profissional",
-            description: "Conjunto completo para pesca esportiva.",
-            price: 249.90,
-          ),
-          const SizedBox(height: 16),
-          FishingCard(
-            imageUrl:
-                "https://images.unsplash.com/photo-1508186225823-0963cf9ab0de",
-            title: "Isca Artificial Premium",
-            description: "Alta performance e super resistente.",
-            price: 39.90,
-          ),
-          const SizedBox(height: 16),
-          FishingCard(
-            imageUrl:
-                "https://images.unsplash.com/photo-1520256862855-398228c41684",
-            title: "Vara de Pesca em Carbono",
-            description: "Leve, durável e excelente para longas pescarias.",
-            price: 189.00,
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => FormPage(repository: repo)),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: ValueListenableBuilder(
+        valueListenable: HiveConfig.logs.listenable(),
+        builder: (context, Box<FishingLogModel> box, _) {
+          final logs = box.values.toList().cast<FishingLogModel>();
+          if (logs.isEmpty) {
+            return const Center(child: Text("Nenhum registro de pesca ainda."));
+          }
+          logs.sort((a, b) => b.date.compareTo(a.date));
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: logs.length,
+            itemBuilder: (context, i) {
+              final log = logs[i];
+              return FishingCard(
+                log: log,
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetailPage(log: log, repository: repo),
+                    ),
+                  );
+                },
+                onDelete: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Excluir registro'),
+                      content: const Text('Deseja excluir este registro?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancelar'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Excluir'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirm == true) {
+                    await repo.delete(log.id);
+                    
+                  }
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

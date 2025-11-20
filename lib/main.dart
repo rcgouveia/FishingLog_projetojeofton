@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'core/db/HiveConfig.dart';
+import 'pages/home/HomePage.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await HiveConfig.init();
   runApp(const FishingApp());
 }
 
@@ -10,12 +14,10 @@ class FishingApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'FishingLog',
       debugShowCheckedModeBanner: false,
-      title: "Fishing Store",
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const Scaffold(), // replace missing HomePage class with a concrete widget
+      theme: ThemeData(useMaterial3: true, primarySwatch: Colors.blue),
+      home: const HomePage(),
     );
   }
 }
